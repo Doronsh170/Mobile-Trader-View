@@ -1,3 +1,4 @@
-# Momentum Desk V8, Mobile Trader View
+# Momentum Desk V9, Clean Trading Desk
 
-Static GitHub Pages app for relative momentum monitoring with mobile optimized group selection and agent notes.
+Static GitHub Pages version.
+Do not commit any Finnhub API key. The key is entered in the browser and stored locally only.
