@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Momentum Desk V12 Mobile</title>
+  <title>Momentum Desk V13 Mobile</title>
   <style>
 
 :root {
@@ -101,8 +101,8 @@ th, td { padding:7px 6px; font-size:12px; }
 </head>
 <body>
 <header>
-  <h1>Momentum Desk V12 Mobile</h1>
-  <div class="subtitle">קליל לעין: קטגוריות על, כרטיסי קבוצות, ומה לבדוק עכשיו.</div>
+  <h1>Momentum Desk V13 Mobile</h1>
+  <div class="subtitle">קליל לעין, עם בדיקת Premarket / After-hours דרך Alpha Vantage לקבוצה הנבחרת.</div>
   <div class="topline">
     <span class="pill">בלי Market Core</span>
     <span class="pill">בלי Leveraged ETFs</span>
@@ -125,7 +125,8 @@ th, td { padding:7px 6px; font-size:12px; }
         <option value="120000">120 שניות</option>
       </select>
       <button class="good" id="autoBtn">אוטומטי</button>
-      <button id="extendedBtn">מורחב כבוי</button>
+      <button class="extended" id="alphaExtendedBtn">בדוק מורחב</button>
+      <button id="extendedBtn" style="display:none">מורחב כבוי</button>
       <button id="soundBtn">צליל כבוי</button>
     </div>
 
@@ -136,8 +137,11 @@ th, td { padding:7px 6px; font-size:12px; }
       <summary>הגדרות, API והוספת טיקר</summary>
       <div class="toolbar" style="margin-top:10px">
         <input id="apiKey" class="apiKey" type="password" placeholder="Finnhub API key" autocomplete="off" />
-        <button id="saveKeyBtn">שמור מפתח</button>
-        <button class="danger" id="clearKeyBtn">מחק מפתח</button>
+        <button id="saveKeyBtn">שמור Finnhub</button>
+        <button class="danger" id="clearKeyBtn">מחק Finnhub</button>
+        <input id="alphaKey" class="apiKey" type="password" placeholder="Alpha Vantage API key, למורחב" autocomplete="off" />
+        <button id="saveAlphaKeyBtn">שמור Alpha</button>
+        <button class="danger" id="clearAlphaKeyBtn">מחק Alpha</button>
         <button id="copyTvBtn">העתק TradingView</button>
         <button id="sampleBtn">דוגמת Nuclear</button>
         <button class="danger" id="clearDataBtn">נקה נתונים</button>
@@ -205,20 +209,22 @@ const BASE_THEMES = ["AI Infrastructure", "Semiconductors", "DRAM / HBM / Memory
 const CATEGORIES = ["AI & Chips", "Energy / Nuclear / Power", "Speculative Momentum", "Finance / Crypto"];
 const THEME_CATEGORIES = {"AI & Chips": ["AI Infrastructure", "Semiconductors", "DRAM / HBM / Memory", "AI Software / Apps", "Small Cap AI Momentum", "Cybersecurity", "Quantum Computing", "Software / SaaS Growth"], "Energy / Nuclear / Power": ["Nuclear / SMR", "Uranium / Nuclear Fuel", "Power / Data Centers", "Energy / Oil & Gas", "Solar / Renewables", "Rare Earths / Lithium", "Gold / Miners"], "Speculative Momentum": ["Space", "eVTOL / Air Mobility", "Drones / Defense Tech", "Defense / Aerospace", "EV / Batteries / Autonomy", "Biotech Momentum", "GLP-1 / Pharma Growth", "Meme / High Volatility", "IPO / Recent Momentum", "China ADR Momentum"], "Finance / Crypto": ["Bitcoin Miners", "Crypto Infrastructure", "Fintech / Brokers / Payments", "Banks / Financials", "Regional Banks"]};
 
-const KEY_STORAGE = "momentum_desk_finnhub_key_v12";
-const QUOTE_STORAGE = "momentum_desk_quotes_v12";
-const HISTORY_STORAGE = "momentum_desk_history_v12";
-const CUSTOM_STORAGE = "momentum_desk_custom_assets_v12";
-const SOUND_STORAGE = "momentum_desk_sound_v12";
-const EVENT_STORAGE = "momentum_desk_events_v12";
-const EXTENDED_STORAGE = "momentum_desk_extended_hours_v12";
+const KEY_STORAGE = "momentum_desk_finnhub_key_v13";
+const QUOTE_STORAGE = "momentum_desk_quotes_v13";
+const HISTORY_STORAGE = "momentum_desk_history_v13";
+const CUSTOM_STORAGE = "momentum_desk_custom_assets_v13";
+const SOUND_STORAGE = "momentum_desk_sound_v13";
+const EVENT_STORAGE = "momentum_desk_events_v13";
+const EXTENDED_STORAGE = "momentum_desk_extended_hours_v13";
+const ALPHA_STORAGE = "momentum_desk_alpha_key_v13";
+const ALPHA_DELAY_MS = 13000;
 
 let quotes = loadJson(QUOTE_STORAGE, {});
 let history = loadJson(HISTORY_STORAGE, {});
 let customAssets = loadJson(CUSTOM_STORAGE, []);
 let knownEvents = loadJson(EVENT_STORAGE, []);
-let selectedTheme = localStorage.getItem("momentum_desk_selected_theme_v12") || BASE_THEMES[0];
-let selectedCategory = localStorage.getItem("momentum_desk_selected_category_v12") || CATEGORIES[0];
+let selectedTheme = localStorage.getItem("momentum_desk_selected_theme_v13") || BASE_THEMES[0];
+let selectedCategory = localStorage.getItem("momentum_desk_selected_category_v13") || CATEGORIES[0];
 let autoTimer = null;
 let soundOn = localStorage.getItem(SOUND_STORAGE) === "1";
 let extendedHoursOn = localStorage.getItem(EXTENDED_STORAGE) === "1";
@@ -323,6 +329,11 @@ function sortedRows(theme=selectedTheme) {
   });
 }
 function tvUrl(symbol) { return "https://www.tradingview.com/chart/?symbol=" + encodeURIComponent(symbol); }
+function sourceBadge(q) {
+  if (!q || !q.source) return "";
+  if (q.source === "Alpha Vantage") return `<div class="name">מורחב · ${q.alphaTimestamp || ""}</div>`;
+  return "";
+}
 function chip(ticker) { return `<span class="ticker-chip">${ticker}</span>`; }
 
 function renderCategories() {
@@ -337,8 +348,8 @@ function renderCategories() {
       selectedCategory = cat;
       const first = themesInCategory(cat)[0];
       if (first) selectedTheme = first;
-      localStorage.setItem("momentum_desk_selected_category_v12", selectedCategory);
-      localStorage.setItem("momentum_desk_selected_theme_v12", selectedTheme);
+      localStorage.setItem("momentum_desk_selected_category_v13", selectedCategory);
+      localStorage.setItem("momentum_desk_selected_theme_v13", selectedTheme);
       renderAll();
     };
     el.appendChild(btn);
@@ -368,7 +379,7 @@ function renderGroupCards() {
     btn.innerHTML = `<div class="group-title">${theme}</div><div class="group-meta">${assets.length} מניות</div><div class="group-mini">${miniSummary(theme)}</div>`;
     btn.onclick = () => {
       selectedTheme = theme;
-      localStorage.setItem("momentum_desk_selected_theme_v12", selectedTheme);
+      localStorage.setItem("momentum_desk_selected_theme_v13", selectedTheme);
       renderAll();
       if (window.innerWidth <= 820) setTimeout(() => document.getElementById("focusArea").scrollIntoView({behavior:"smooth", block:"start"}), 60);
     };
@@ -394,7 +405,7 @@ function renderRows() {
     const tr = document.createElement("tr");
     tr.innerHTML = `
       <td><a class="tv-link" href="${tvUrl(asset.tvSymbol)}" target="_blank"><div class="ticker">${asset.ticker}</div></a><div class="name">${asset.name}</div></td>
-      <td class="hide-mobile"><span class="num">${fmtPrice(q?.c)}</span></td>
+      <td class="hide-mobile"><span class="num">${fmtPrice(q?.c)}</span>${sourceBadge(q)}</td>
       <td><span class="num ${pctClass(c.ownDay)}">${fmtPct(c.ownDay)}</span></td>
       <td><span class="num ${pctClass(c.gapDay)}">${fmtPct(c.gapDay)}</span></td>
       <td class="hide-mobile"><span class="num ${pctClass(c.ownM15)}">${fmtPct(c.ownM15)}</span></td>
@@ -559,7 +570,7 @@ async function fetchSelectedTheme() {
   if (!token) { alert("הזן מפתח Finnhub ושמור אותו בדפדפן"); return; }
   const session = marketSession();
   if (session.kind !== "regular" && !extendedHoursOn) {
-    showAlert("מחוץ למסחר רגיל. להפעלת מסחר מוקדם/מאוחר לחץ על: מורחב כבוי");
+    showAlert("מחוץ למסחר רגיל. למחיר Premarket / After-hours לחץ על: בדוק מורחב");
     return;
   }
   if (session.kind === "closed" && extendedHoursOn) showAlert("השוק מחוץ למסחר מוקדם/מאוחר. יוצג נתון אחרון בלבד אם קיים.");
@@ -618,8 +629,8 @@ function loadSample() {
   history["BWXT"] = [{t: now - 16*60*1000, p:103.5}, {t: now, p:104}];
   history["FLR"] = [{t: now - 16*60*1000, p:103.2}, {t: now, p:103.5}];
   saveJson(QUOTE_STORAGE, quotes); saveJson(HISTORY_STORAGE, history);
-  localStorage.setItem("momentum_desk_selected_category_v12", selectedCategory);
-  localStorage.setItem("momentum_desk_selected_theme_v12", selectedTheme);
+  localStorage.setItem("momentum_desk_selected_category_v13", selectedCategory);
+  localStorage.setItem("momentum_desk_selected_theme_v13", selectedTheme);
   renderAll(); showAlert("נטענה דוגמת Nuclear");
 }
 function addCustom() {
@@ -640,26 +651,151 @@ function exportCustom() {
   const blob = new Blob([csv], {type:"text/csv;charset=utf-8"});
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
-  a.href = url; a.download = "custom_assets_v12.csv"; a.click();
+  a.href = url; a.download = "custom_assets_v13.csv"; a.click();
   URL.revokeObjectURL(url);
 }
 function clearCustom() {
   if (!confirm("לנקות תוספות ידניות?")) return;
   customAssets = []; saveJson(CUSTOM_STORAGE, customAssets); renderAll();
 }
+
+function getAlphaKey() {
+  return (document.getElementById("alphaKey").value || localStorage.getItem(ALPHA_STORAGE) || "").trim();
+}
+function saveAlphaKey() {
+  const key = document.getElementById("alphaKey").value.trim();
+  if (!key) { alert("לא הוזן מפתח Alpha Vantage"); return; }
+  localStorage.setItem(ALPHA_STORAGE, key);
+  log("Alpha Vantage API key saved in localStorage");
+}
+function clearAlphaKey() {
+  localStorage.removeItem(ALPHA_STORAGE);
+  document.getElementById("alphaKey").value = "";
+  log("Alpha Vantage API key removed");
+}
+function parseAlphaTimestamp(ts) {
+  const [d, t] = ts.split(" ");
+  const [hh, mm] = t.split(":").map(Number);
+  return {date: d, minutes: hh * 60 + mm};
+}
+function isRegularMinutes(m) {
+  return m >= 9 * 60 + 30 && m <= 16 * 60;
+}
+function alphaLatestBar(series) {
+  const entries = Object.entries(series || {}).sort((a,b) => a[0].localeCompare(b[0]));
+  if (!entries.length) return null;
+  const [ts, bar] = entries[entries.length - 1];
+  const close = Number(bar["4. close"]);
+  if (!Number.isFinite(close)) return null;
+  return {ts, close};
+}
+function alphaReferenceClose(series, latestTs, fallbackPc) {
+  const entries = Object.entries(series || {}).sort((a,b) => a[0].localeCompare(b[0]));
+  const latest = parseAlphaTimestamp(latestTs);
+  let chosen = null;
+  for (const [ts, bar] of entries) {
+    const p = parseAlphaTimestamp(ts);
+    const close = Number(bar["4. close"]);
+    if (!Number.isFinite(close)) continue;
+    const regular = isRegularMinutes(p.minutes);
+    if (!regular) continue;
+
+    if (latest.minutes > 16 * 60) {
+      if (p.date === latest.date && p.minutes <= 16 * 60) chosen = {ts, close};
+    } else {
+      if (p.date < latest.date) chosen = {ts, close};
+    }
+  }
+  if (chosen) return chosen.close;
+  if (Number.isFinite(fallbackPc)) return fallbackPc;
+  return null;
+}
+function alphaIsExtended(ts) {
+  const p = parseAlphaTimestamp(ts);
+  return (p.minutes >= 4 * 60 && p.minutes < 9 * 60 + 30) || (p.minutes > 16 * 60 && p.minutes <= 20 * 60);
+}
+async function fetchAlphaExtendedQuote(asset, key) {
+  const url = `https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=${encodeURIComponent(asset.ticker)}&interval=1min&extended_hours=true&outputsize=full&apikey=${encodeURIComponent(key)}`;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`${asset.ticker} Alpha HTTP ${res.status}`);
+  const data = await res.json();
+  if (data.Note) throw new Error("Alpha rate limit: " + data.Note.slice(0, 90));
+  if (data.Information) throw new Error("Alpha information: " + data.Information.slice(0, 90));
+  if (data["Error Message"]) throw new Error(data["Error Message"]);
+  const series = data["Time Series (1min)"];
+  if (!series) throw new Error(`${asset.ticker} no 1min series`);
+  const latest = alphaLatestBar(series);
+  if (!latest) throw new Error(`${asset.ticker} no latest bar`);
+  const fallbackPc = quoteFor(asset.ticker)?.pc;
+  const pc = alphaReferenceClose(series, latest.ts, Number(fallbackPc));
+  quotes[asset.ticker.toUpperCase()] = {
+    c: latest.close,
+    pc: Number.isFinite(pc) ? pc : null,
+    o: null, h: null, l: null,
+    t: Math.floor(Date.now() / 1000),
+    updatedAt: nowTs(),
+    source: "Alpha Vantage",
+    alphaTimestamp: latest.ts,
+    alphaExtended: alphaIsExtended(latest.ts)
+  };
+  addHistory(asset.ticker, latest.close);
+  return {ticker: asset.ticker, ts: latest.ts, price: latest.close, extended: alphaIsExtended(latest.ts)};
+}
+async function fetchAlphaExtendedSelectedTheme() {
+  const key = getAlphaKey();
+  if (!key) {
+    alert("הזן מפתח Alpha Vantage בהגדרות. זה המפתח שמשמש ל־Premarket / After-hours.");
+    return;
+  }
+  const assets = assetsByTheme(selectedTheme);
+  if (!assets.length) return;
+  const btn = document.getElementById("alphaExtendedBtn");
+  btn.disabled = true;
+  let ok = 0, fail = 0;
+  showAlert("בודק Premarket / After-hours לקבוצה הנבחרת בלבד. בגרסה החינמית זה איטי כדי לא לעבור מגבלת קצב.");
+  log(`Alpha extended fetch started for ${selectedTheme}. Symbols: ${assets.length}`);
+  for (let i = 0; i < assets.length; i++) {
+    const asset = assets[i];
+    btn.textContent = `מורחב ${i + 1}/${assets.length}`;
+    try {
+      const r = await fetchAlphaExtendedQuote(asset, key);
+      ok++;
+      log(`${asset.ticker}: Alpha ${r.price} at ${r.ts} extended=${r.extended}`);
+      renderAll();
+    } catch(e) {
+      fail++;
+      log(`${asset.ticker}: ${e.message}`);
+      if (String(e.message).includes("rate limit")) break;
+    }
+    if (i < assets.length - 1) await sleep(ALPHA_DELAY_MS);
+  }
+  saveJson(QUOTE_STORAGE, quotes);
+  saveJson(HISTORY_STORAGE, history);
+  const stamp = new Date().toLocaleTimeString("he-IL", {hour:"2-digit", minute:"2-digit", second:"2-digit"});
+  document.getElementById("lastUpdatePill").textContent = "מורחב עודכן: " + stamp;
+  btn.disabled = false;
+  btn.textContent = "בדוק מורחב";
+  log(`Alpha extended done. Success: ${ok}, Failed: ${fail}`);
+  renderAll();
+}
+
 function init() {
   document.getElementById("apiKey").value = localStorage.getItem(KEY_STORAGE) || "";
+  document.getElementById("alphaKey").value = localStorage.getItem(ALPHA_STORAGE) || "";
   document.getElementById("themeSelect").onchange = e => {
     selectedTheme = e.target.value;
     selectedCategory = Object.keys(THEME_CATEGORIES).find(cat => THEME_CATEGORIES[cat].includes(selectedTheme)) || selectedCategory;
-    localStorage.setItem("momentum_desk_selected_theme_v12", selectedTheme);
-    localStorage.setItem("momentum_desk_selected_category_v12", selectedCategory);
+    localStorage.setItem("momentum_desk_selected_theme_v13", selectedTheme);
+    localStorage.setItem("momentum_desk_selected_category_v13", selectedCategory);
     renderAll();
   };
   document.getElementById("fetchBtn").onclick = fetchSelectedTheme;
   document.getElementById("autoBtn").onclick = toggleAuto;
+  document.getElementById("alphaExtendedBtn").onclick = fetchAlphaExtendedSelectedTheme;
   document.getElementById("extendedBtn").onclick = toggleExtendedHours;
   document.getElementById("soundBtn").onclick = toggleSound;
+  document.getElementById("saveAlphaKeyBtn").onclick = saveAlphaKey;
+  document.getElementById("clearAlphaKeyBtn").onclick = clearAlphaKey;
   document.getElementById("saveKeyBtn").onclick = saveApiKey;
   document.getElementById("clearKeyBtn").onclick = clearApiKey;
   document.getElementById("copyTvBtn").onclick = copyTradingView;
