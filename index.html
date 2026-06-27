@@ -95,7 +95,123 @@ body.light .apiLink{background:#ffffff;color:#1d4ed8}
 .hero{margin-bottom:16px}
 .searchBox{margin-top:0}
 
-</style></head><body><header><h1>Momentum Desk</h1><div class="sub">מפת סקטורים ותתי־סקטורים למניות וול סטריט</div></header><main><section id="hero" class="hero"></section><section class="searchBox"><div class="searchLabel">חיפוש מניה</div><div class="search"><div class="searchWrap"><input id="symbolInput" class="symbol" autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false" value="" placeholder=""/><div id="suggestions" class="suggestions"></div></div><button id="findBtn" class="primary">בדוק</button></div><div id="autoStatus" class="status">אוטומטי כבוי</div><div class="toolbar topActions"><button id="refreshBtn" class="good">רענן עכשיו</button><button id="autoBtn">אוטומטי 30 שניות</button><button id="themeBtn" class="themeBtn">רקע בהיר</button><span id="lastUpdate" class="status">עדיין לא עודכן</span></div></section><div id="notice" class="notice"></div><section class="box decision"><h2>מצב עכשיו</h2><div class="line"><span class="label">מובילה בקבוצה</span><span id="leaderVal" class="val wait">מחכה</span></div><div class="line"><span class="label">חלשה יחסית</span><span id="laggardVal" class="val wait">מחכה</span></div><div class="line"><span class="label">המניה מול הקבוצה</span><span id="targetVal" class="val wait">מחכה</span></div></section><section class="box" id="peerToggleBox"><button id="togglePeersBtn" class="primary fullBtn">פתח את כל המניות בקבוצה</button></section><section class="box hidden" id="peerBox"><div class="peerHead"><h2>קבוצת השוואה</h2><span id="peerCount" class="count"></span></div><div id="peers" class="peers"></div></section><details><summary>עוד</summary><div class="toolbar"><input id="apiKey" class="api" type="password" placeholder="Finnhub API key"/><a class="apiLink" target="_blank" rel="noopener" href="https://finnhub.io/">פתח Finnhub</a><button id="saveKeyBtn">שמור API</button><button id="clearKeyBtn" class="danger">מחק API</button><button id="clearDataBtn" class="danger">נקה נתונים</button></div><div id="log" class="log"></div></details><section class="legalBox">
+
+body.light button,
+body.light a.button,
+body.light .apiLink{
+  color:#ffffff;
+}
+body.light button:not(.primary):not(.good):not(.danger),
+body.light a.button:not(.primary):not(.good):not(.danger),
+body.light .apiLink{
+  background:#1e293b;
+  border-color:#334155;
+}
+body.light button.primary{
+  color:#ffffff;
+}
+body.light button.good{
+  color:#ffffff;
+}
+body.light button.danger{
+  color:#ffffff;
+}
+
+
+/* stronger contrast overrides for light mode buttons */
+body.light button,
+body.light .controls button,
+body.light .apiRow button,
+body.light .toolbar button{
+  color:#ffffff !important;
+}
+body.light button:not(.primary):not(.good):not(.danger){
+  background:#1e293b !important;
+  border-color:#334155 !important;
+}
+body.light #themeBtn,
+body.light #autoBtn,
+body.light #saveKeyBtn{
+  background:#1e293b !important;
+  color:#ffffff !important;
+  border-color:#334155 !important;
+}
+body.light #clearKeyBtn,
+body.light #clearDataBtn{
+  color:#ffffff !important;
+}
+
+
+.selectedHeader{display:none}
+.selectedHeader.show{display:block}
+.selectedHeader{
+  margin-top:12px;
+  margin-bottom:12px;
+  padding:18px;
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius:18px;
+}
+.selectedHeader .ticker{
+  direction:ltr;
+  text-align:right;
+  font-size:34px;
+  line-height:1;
+  font-weight:900;
+  color:var(--text);
+}
+.selectedHeader .company{
+  margin-top:8px;
+  font-size:18px;
+  font-weight:800;
+  color:var(--text);
+  text-align:right;
+}
+.selectedHeader .theme{
+  margin-top:8px;
+  font-size:15px;
+  font-weight:800;
+  color:#bfdbfe;
+  text-align:right;
+}
+body.light .selectedHeader .theme{
+  color:#2563eb;
+}
+.selectedHeader .meta{
+  margin-top:8px;
+  font-size:13px;
+  line-height:1.55;
+  color:var(--muted);
+  text-align:right;
+}
+.selectedHeader .tvBtn{
+  margin-top:14px;
+  width:100%;
+}
+.selectedHeader .tabs{
+  margin-top:12px;
+}
+
+
+/* mobile: make the 3 utility buttons in the top toolbar uniform */
+.topActions #refreshBtn,
+.topActions #autoBtn,
+.topActions #themeBtn{
+  background:#1e293b !important;
+  border-color:#334155 !important;
+  color:#ffffff !important;
+}
+body.light .topActions #refreshBtn,
+body.light .topActions #autoBtn,
+body.light .topActions #themeBtn{
+  background:#1e293b !important;
+  border-color:#334155 !important;
+  color:#ffffff !important;
+}
+
+</style></head><body><header><h1>Momentum Desk</h1><div class="sub">מפת סקטורים ותתי־סקטורים למניות וול סטריט</div></header><main><section id="hero" class="hero"></section><section class="searchBox"><div class="searchLabel">חיפוש מניה</div><div class="search"><div class="searchWrap"><input id="symbolInput" class="symbol" autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false" value="" placeholder=""/><div id="suggestions" class="suggestions"></div></div><button id="findBtn" class="primary">בדוק</button></div><div id="autoStatus" class="status">אוטומטי כבוי</div><div class="toolbar topActions"><button id="refreshBtn" class="good">רענן עכשיו</button><button id="autoBtn">אוטומטי 30 שניות</button><button id="themeBtn" class="themeBtn">רקע בהיר</button><span id="lastUpdate" class="status">עדיין לא עודכן</span></div></section>
+<section id="selectedHeader" class="selectedHeader hidden"></section>
+<div id="notice" class="notice"></div><section class="box decision"><h2>מצב עכשיו</h2><div class="line"><span class="label">מובילה בקבוצה</span><span id="leaderVal" class="val wait">מחכה</span></div><div class="line"><span class="label">חלשה יחסית</span><span id="laggardVal" class="val wait">מחכה</span></div><div class="line"><span class="label">המניה מול הקבוצה</span><span id="targetVal" class="val wait">מחכה</span></div></section><section class="box" id="peerToggleBox"><button id="togglePeersBtn" class="primary fullBtn">פתח את כל המניות בקבוצה</button></section><section class="box hidden" id="peerBox"><div class="peerHead"><h2>קבוצת השוואה</h2><span id="peerCount" class="count"></span></div><div id="peers" class="peers"></div></section><details><summary>עוד</summary><div class="toolbar"><input id="apiKey" class="api" type="password" placeholder="Finnhub API key"/><a class="apiLink" target="_blank" rel="noopener" href="https://finnhub.io/">פתח Finnhub</a><button id="saveKeyBtn">שמור API</button><button id="clearKeyBtn" class="danger">מחק API</button><button id="clearDataBtn" class="danger">נקה נתונים</button></div><div id="log" class="log"></div></details><section class="legalBox">
   <strong class="legalTitle">גילוי נאות</strong> המידע באתר נועד לסידור, סיווג והשוואה ראשונית של מניות לפי סקטורים ותתי־סקטורים בלבד. אין לראות בו ייעוץ השקעות, המלצה לקנייה או מכירה, או תחליף לשיקול דעת עצמאי.
   <div class="credit">מאת דורון שרייבמן</div>
 </section></main><script>
@@ -121,12 +237,13 @@ function renderSuggestions(){let input=document.getElementById("symbolInput"),bo
 function chooseSuggestion(t){let input=document.getElementById("symbolInput"),box=document.getElementById("suggestions");input.value=t;if(box)box.classList.remove("show");find()}
 function closeSuggestions(){let box=document.getElementById("suggestions");if(box)box.classList.remove("show")}
 function find(){closeSuggestions();let t=document.getElementById("symbolInput").value.trim().toUpperCase();if(!t){note("הקלד סימבול");return}abortFetch();peersOpen=false;ticker=t;localStorage.setItem("momentum_desk_ticker_v20",t);let p=primary(t);if(!p){render();note(t+" לא נמצא ביקום");return}theme=p;localStorage.setItem("momentum_desk_theme_v20",theme);render();if(key()){setTimeout(()=>fetchGroup("symbol"),50);startAuto()}}
-function dashboardHtml(){let unique=[...new Map(A.map(a=>[a.ticker,a])).values()];let themes=[...new Set(A.map(a=>a.theme))];let cats=[...new Set(A.map(a=>a.category))];return `<div class="proShell"><div class="proCard"><div class="proTitle">Momentum Desk</div><p class="proText">דשבורד עבודה לסיווג מניות וול סטריט לפי סקטור, תת־סקטור וקבוצת השוואה. המטרה היא להגיע מהר להקשר הנכון של כל מניה, בלי לפתוח רשימות מפוזרות.</p><div class="proKpis"><div class="proKpi"><div class="proNum">${unique.length}</div><div class="proLabel">מניות</div></div><div class="proKpi"><div class="proNum">${themes.length}</div><div class="proLabel">קבוצות השוואה</div></div><div class="proKpi"><div class="proNum">${cats.length}</div><div class="proLabel">קטגוריות</div></div></div></div></div>`}function renderHero(){let e=document.getElementById("hero"),m=matches(ticker);if(!ticker){e.innerHTML=dashboardHtml();return}if(!m.length){e.innerHTML=`<div class="big">${ticker}</div><div class="meta">לא נמצא ביקום.</div>`;return}let a=m.find(x=>x.theme===theme)||m[0];let tabs=m.length>1?'<div class="tabs">'+m.map(x=>`<button class="tab ${x.theme===theme?'active':''}" onclick="switchTheme('${x.theme.replaceAll("'","\'")}')">${x.theme}</button>`).join("")+"</div>":"";e.innerHTML=`<div class="big">${ticker}</div><div class="group">${theme}</div><div class="meta">${a.name} · קבוצת ההשוואה הרלוונטית</div><a class="tvBtn" target="_blank" rel="noopener" href="${tv(a.tvSymbol)}">פתח גרף ב־TradingView</a>${tabs}`}
+function dashboardHtml(){let unique=[...new Map(A.map(a=>[a.ticker,a])).values()];let themes=[...new Set(A.map(a=>a.theme))];let cats=[...new Set(A.map(a=>a.category))];return `<div class="proShell"><div class="proCard"><div class="proTitle">Momentum Desk</div><p class="proText">דשבורד עבודה לסיווג מניות וול סטריט לפי סקטור, תת־סקטור וקבוצת השוואה. המטרה היא להגיע מהר להקשר הנכון של כל מניה, בלי לפתוח רשימות מפוזרות.</p><div class="proKpis"><div class="proKpi"><div class="proNum">${unique.length}</div><div class="proLabel">מניות</div></div><div class="proKpi"><div class="proNum">${themes.length}</div><div class="proLabel">קבוצות השוואה</div></div><div class="proKpi"><div class="proNum">${cats.length}</div><div class="proLabel">קטגוריות</div></div></div></div></div>`}function renderHero(){let e=document.getElementById("hero");e.innerHTML=dashboardHtml()}
+function renderSelectedHeader(){let box=document.getElementById("selectedHeader"),m=matches(ticker);if(!box)return;if(!ticker||!m.length){box.classList.remove("show");box.innerHTML="";return}let a=m.find(x=>x.theme===theme)||m[0];let tabs=m.length>1?'<div class="tabs">'+m.map(x=>`<button class="tab ${x.theme===theme?'active':''}" onclick="switchTheme('${x.theme.replaceAll("'","\'")}')">${x.theme}</button>`).join("")+"</div>":"";box.innerHTML=`<div class="ticker">${ticker}</div><div class="company">${a.name}</div><div class="theme">${theme}</div><div class="meta">קבוצת ההשוואה הרלוונטית</div><a class="tvBtn" target="_blank" rel="noopener" href="${tv(a.tvSymbol)}">פתח גרף ב־TradingView</a>${tabs}`;box.classList.add("show")}
 function togglePeers(){if(!ticker){note("בחר מניה קודם");return}if(!matches(ticker).length){note(ticker+" לא נמצא ביקום");return}peersOpen=!peersOpen;renderPeers()}
 function renderPeers(){let box=document.getElementById("peerBox"),btn=document.getElementById("togglePeersBtn"),cnt=document.getElementById("peerCount"),el=document.getElementById("peers");if(!box||!btn||!cnt||!el)return;if(!ticker||!matches(ticker).length){box.classList.add("hidden");btn.disabled=true;btn.textContent="בחר מניה כדי לפתוח קבוצת השוואה";cnt.textContent="";el.innerHTML="";return}btn.disabled=false;btn.textContent=peersOpen?"סגור את קבוצת ההשוואה":"פתח את כל המניות בקבוצה";if(!peersOpen){box.classList.add("hidden");cnt.textContent="";el.innerHTML="";return}let p=assets();box.classList.remove("hidden");cnt.textContent=p.length+" מניות";el.innerHTML=p.map(a=>{let d=day(q(a.ticker));return `<div class="peer ${a.ticker===ticker?'target':''}"><a target="_blank" rel="noopener" href="${tv(a.tvSymbol)}" aria-label="פתח ${a.ticker} ב-TradingView"><div class="peerMove ${cls(d)}">${pct(d)}</div><div class="peerMain"><div class="sym">${a.ticker}</div><div class="nm">${a.name}</div></div></a></div>`}).join("")}
 function renderDecision(){let r=rows(), have=r.some(x=>Number.isFinite(x.c.od)), lead=r[0], lag=[...r].reverse()[0], tar=r.find(x=>x.a.ticker===ticker);document.getElementById("leaderVal").innerHTML=have&&lead?`<span class="${cls(lead.c.gd)}">${lead.a.ticker} ${pct(lead.c.gd)}</span>`:"מחכה";document.getElementById("laggardVal").innerHTML=have&&lag?`<span class="${cls(lag.c.gd)}">${lag.a.ticker} ${pct(lag.c.gd)}</span>`:"מחכה";document.getElementById("targetVal").innerHTML=tar&&Number.isFinite(tar.c.gd)?`<span class="${cls(tar.c.gd)}">${pct(tar.c.gd)}</span>`:"מחכה"}
 function renderTable(){let e=document.getElementById("rows");if(!e)return;e.innerHTML=rows().map(r=>`<tr><td><a class="tv" target="_blank" href="${tv(r.a.tvSymbol)}">${r.a.ticker}</a><div class="nm">${r.a.name}</div></td><td>${price(r.q?.c)}<div class="nm">${r.q?.src||""}</div></td><td><span class="${cls(r.c.od)} num">${pct(r.c.od)}</span></td><td><span class="${cls(r.c.gd)} num">${pct(r.c.gd)}</span></td><td><span class="badge ${r.s.cl}">${r.s.text}</span></td></tr>`).join("")}
-function render(){renderHero();renderPeers();renderDecision();renderTable();updateAuto()}
+function render(){renderHero();renderSelectedHeader();renderPeers();renderDecision();renderTable();updateAuto()}
 function key(){return(document.getElementById("apiKey").value||localStorage.getItem(KEY)||"").trim()}
 function nyPhase(){let parts=new Intl.DateTimeFormat("en-US",{timeZone:"America/New_York",weekday:"short",hour:"2-digit",minute:"2-digit",hour12:false}).formatToParts(new Date());let m=Object.fromEntries(parts.map(p=>[p.type,p.value]));let wd=m.weekday,min=(+m.hour)*60+(+m.minute);if(wd==="Sat"||wd==="Sun")return"closed";if(min>=240&&min<570)return"pre";if(min>=570&&min<960)return"regular";if(min>=960&&min<1200)return"after";return"closed"}
 const YAHOO_WORKER_BASE="https://momentum-yahoo-prices.sh6doron.workers.dev/";
@@ -150,7 +267,7 @@ function saveKey(){let k=document.getElementById("apiKey").value.trim();if(!k){a
 function clearKey(){localStorage.removeItem(KEY);document.getElementById("apiKey").value="";stopAuto();note("API נמחק")}
 function log(m){let e=document.getElementById("log");if(!e)return;let t=new Date().toLocaleTimeString("he-IL",{hour:"2-digit",minute:"2-digit",second:"2-digit"});e.textContent=`[${t}] ${m}\n`+e.textContent}
 function copyTV(){navigator.clipboard.writeText(assets().map(a=>a.tvSymbol).join(",")).then(()=>note("הועתק ל־TradingView"))}
-function clearData(){quotes={};hist={};save(QS,quotes);save(HS,hist);render();note("הנתונים נוקו")}
+function clearData(){stopAuto();abortFetch();quotes={};hist={};localStorage.removeItem(QS);localStorage.removeItem(HS);localStorage.removeItem("momentum_desk_ticker_v20");ticker="";peersOpen=false;let i=document.getElementById("symbolInput");if(i)i.value="";let last=document.getElementById("lastUpdate");if(last)last.textContent="עדיין לא עודכן";render();note("הנתונים נוקו")}
 function applyTheme(){let mode=localStorage.getItem("momentum_desk_theme_mode_v20")||"dark";document.body.classList.toggle("light",mode==="light");let b=document.getElementById("themeBtn");if(b)b.textContent=mode==="light"?"רקע כהה":"רקע בהיר"}
 function toggleTheme(){let mode=localStorage.getItem("momentum_desk_theme_mode_v20")||"dark";localStorage.setItem("momentum_desk_theme_mode_v20",mode==="light"?"dark":"light");applyTheme()}
 function init(){applyTheme();localStorage.removeItem("momentum_desk_ticker_v20");ticker="";peersOpen=false;document.getElementById("apiKey").value=localStorage.getItem(KEY)||"";document.getElementById("symbolInput").value="";document.getElementById("symbolInput").addEventListener("keydown",e=>{if(e.key==="Enter")find();if(e.key==="Escape")closeSuggestions()});document.getElementById("symbolInput").addEventListener("input",renderSuggestions);document.getElementById("symbolInput").addEventListener("focus",renderSuggestions);document.addEventListener("click",e=>{if(!e.target.closest(".searchWrap"))closeSuggestions()});document.getElementById("findBtn").onclick=find;document.getElementById("refreshBtn").onclick=()=>fetchGroup("manual");document.getElementById("autoBtn").onclick=toggleAuto;document.getElementById("themeBtn").onclick=toggleTheme;document.getElementById("saveKeyBtn").onclick=saveKey;document.getElementById("clearKeyBtn").onclick=clearKey;document.getElementById("clearDataBtn").onclick=clearData;document.getElementById("togglePeersBtn").onclick=togglePeers;setTimeout(()=>{let i=document.getElementById("symbolInput");if(i)i.value="";ticker="";peersOpen=false;render()},0);render();if(false&&key()&&ticker){startAuto();fetchGroup("init")}}
