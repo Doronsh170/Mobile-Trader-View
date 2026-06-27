@@ -209,6 +209,38 @@ body.light .topActions #themeBtn{
   color:#ffffff !important;
 }
 
+
+/* mobile: uniform buttons also inside the bottom API / עוד section */
+details .toolbar button,
+details .toolbar .apiLink,
+details .apiRow button,
+details .apiRow .apiLink{
+  background:#1e293b !important;
+  border-color:#334155 !important;
+  color:#ffffff !important;
+  font-weight:900 !important;
+}
+body.light details .toolbar button,
+body.light details .toolbar .apiLink,
+body.light details .apiRow button,
+body.light details .apiRow .apiLink{
+  background:#1e293b !important;
+  border-color:#334155 !important;
+  color:#ffffff !important;
+}
+details .toolbar button.danger,
+details .apiRow button.danger,
+body.light details .toolbar button.danger,
+body.light details .apiRow button.danger{
+  background:#5b1111 !important;
+  border-color:#7f1d1d !important;
+  color:#ffffff !important;
+}
+details .toolbar input.api,
+details .apiRow input.api{
+  color:var(--text) !important;
+}
+
 </style></head><body><header><h1>Momentum Desk</h1><div class="sub">מפת סקטורים ותתי־סקטורים למניות וול סטריט</div></header><main><section id="hero" class="hero"></section><section class="searchBox"><div class="searchLabel">חיפוש מניה</div><div class="search"><div class="searchWrap"><input id="symbolInput" class="symbol" autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false" value="" placeholder=""/><div id="suggestions" class="suggestions"></div></div><button id="findBtn" class="primary">בדוק</button></div><div id="autoStatus" class="status">אוטומטי כבוי</div><div class="toolbar topActions"><button id="refreshBtn" class="good">רענן עכשיו</button><button id="autoBtn">אוטומטי 30 שניות</button><button id="themeBtn" class="themeBtn">רקע בהיר</button><span id="lastUpdate" class="status">עדיין לא עודכן</span></div></section>
 <section id="selectedHeader" class="selectedHeader hidden"></section>
 <div id="notice" class="notice"></div><section class="box decision"><h2>מצב עכשיו</h2><div class="line"><span class="label">מובילה בקבוצה</span><span id="leaderVal" class="val wait">מחכה</span></div><div class="line"><span class="label">חלשה יחסית</span><span id="laggardVal" class="val wait">מחכה</span></div><div class="line"><span class="label">המניה מול הקבוצה</span><span id="targetVal" class="val wait">מחכה</span></div></section><section class="box" id="peerToggleBox"><button id="togglePeersBtn" class="primary fullBtn">פתח את כל המניות בקבוצה</button></section><section class="box hidden" id="peerBox"><div class="peerHead"><h2>קבוצת השוואה</h2><span id="peerCount" class="count"></span></div><div id="peers" class="peers"></div></section><details><summary>עוד</summary><div class="toolbar"><input id="apiKey" class="api" type="password" placeholder="Finnhub API key"/><a class="apiLink" target="_blank" rel="noopener" href="https://finnhub.io/">פתח Finnhub</a><button id="saveKeyBtn">שמור API</button><button id="clearKeyBtn" class="danger">מחק API</button><button id="clearDataBtn" class="danger">נקה נתונים</button></div><div id="log" class="log"></div></details><section class="legalBox">
